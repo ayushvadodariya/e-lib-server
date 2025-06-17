@@ -5,6 +5,22 @@ import userModel from "./userModel";
 import { sign } from "jsonwebtoken";
 import { config } from "../config/config";
 import { User } from "./userTypes";
+import { AuthRequest } from "../types/express";
+
+const userDetail = async (req: Request, res: Response, next: NextFunction) => {
+  const _req = req as AuthRequest;
+  const userId = _req.userId;
+  try {
+    const user = await userModel.findById(userId,{password: 0});
+    return res.status(200).json({
+      id: user?._id,
+      email: user?.email,
+      name: user?.name
+    });
+  } catch (error) {
+    return next(createHttpError(500, "error while getting user detail"));
+  }
+}
 
 const createUser = async (req: Request, res: Response, next: NextFunction) => {
   const { name, email, password } = req.body;
@@ -86,4 +102,4 @@ const loginUser = async (req: Request, res: Response, next: NextFunction) => {
   res.json({ accessToken: token });
 };
 
-export { createUser, loginUser };
+export { createUser, loginUser, userDetail };
