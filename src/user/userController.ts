@@ -15,7 +15,11 @@ const userDetail = async (req: Request, res: Response, next: NextFunction) => {
     return res.status(200).json({
       id: user?._id,
       email: user?.email,
-      name: user?.name
+      name: user?.name,
+      username: user?.username,
+      bio: user?.bio,
+      profilePhoto: user?.profilePhoto,
+      createdAt: user?.createdAt
     });
   } catch (error) {
     return next(createHttpError(500, "error while getting user detail"));
