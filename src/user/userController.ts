@@ -8,6 +8,42 @@ import { User } from "./userTypes";
 import { AuthRequest } from "../types/express";
 import { formatUserResponse } from "./userUtils";
 
+const updateUserDetail = async(req: Request, res: Response, next: NextFunction) => {
+  const { name, username, bio} = req.body;
+  const _req = req as AuthRequest;
+
+  try{
+    const updateFields: Partial<User> = {};
+
+    const allowedFields = ['name', 'username', 'bio', 'profilePhoto'] as const;
+
+    for( const field of allowedFields) {
+      if(req.body[field] !== undefined) {
+        updateFields[field] = req.body[field];
+      }
+    }
+
+    if(Object.keys(updateFields).length === 0) {
+      return res.status(400).json({ message: "No valid fields to update"});
+    }
+
+    const updatedUser = await userModel.findByIdAndUpdate(
+      _req.userId,
+      updateFields,
+      { new: true }
+    ).select("-password");
+
+    if(!updatedUser) {
+      return next(createHttpError(404, "User not found"));
+    }
+
+    return res.status(200).json(formatUserResponse(updatedUser));
+
+  } catch (error) {
+    return next(createHttpError(500, "Error while updating user details"));
+  }
+}
+
 const userDetail = async (req: Request, res: Response, next: NextFunction) => {
   const _req = req as AuthRequest;
   const userId = _req.userId;
@@ -99,4 +135,4 @@ const loginUser = async (req: Request, res: Response, next: NextFunction) => {
   res.json({ accessToken: token });
 };
 
-export { createUser, loginUser, userDetail };
+export { createUser, loginUser, userDetail, updateUserDetail};
