@@ -6,21 +6,14 @@ import { sign } from "jsonwebtoken";
 import { config } from "../config/config";
 import { User } from "./userTypes";
 import { AuthRequest } from "../types/express";
+import { formatUserResponse } from "./userUtils";
 
 const userDetail = async (req: Request, res: Response, next: NextFunction) => {
   const _req = req as AuthRequest;
   const userId = _req.userId;
   try {
-    const user = await userModel.findById(userId,{password: 0});
-    return res.status(200).json({
-      id: user?._id,
-      email: user?.email,
-      name: user?.name,
-      username: user?.username,
-      bio: user?.bio,
-      profilePhoto: user?.profilePhoto,
-      createdAt: user?.createdAt
-    });
+    const user = await userModel.findById(userId,{password: 0}) as User;
+    return res.status(200).json(formatUserResponse(user));
   } catch (error) {
     return next(createHttpError(500, "error while getting user detail"));
   }
