@@ -9,7 +9,7 @@ const userSchema = new mongoose.Schema<User>(
     },
     username: {
       type: String,
-      required: true
+      unique: true
     },
     email: {
       type: String,
@@ -29,5 +29,26 @@ const userSchema = new mongoose.Schema<User>(
   },
   { timestamps: true }
 );
+
+//Generate username ONLY on first creation
+userSchema.pre('save', async function (next) {
+  if(this.isNew && !this.username) {
+    let baseUsername = this.name
+      .toLowerCase()
+      .replace(/\s+/g, '')      // Remove all whitespace
+      .replace(/[^a-z0-9]/g, '') // Keep only alphanumeric
+      .trim();
+    
+    if (baseUsername.length < 3) {
+      baseUsername = baseUsername + 'user';
+    } else if (baseUsername.length > 15) {
+      baseUsername = baseUsername.substring(0, 15);
+    }
+    
+    const uniqueSuffix = this._id.toString().slice(-6);
+    this.username = `${baseUsername}${uniqueSuffix}`;
+  }
+  next();
+});
 
 export default mongoose.model<User>("User", userSchema);
