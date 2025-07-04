@@ -9,13 +9,19 @@ import { AuthRequest } from "../types/express";
 import { formatUserResponse } from "./userUtils";
 
 const updateUserDetail = async(req: Request, res: Response, next: NextFunction) => {
-  const { name, username, bio} = req.body;
+  const { name, bio, profilePhoto } = req.body;
   const _req = req as AuthRequest;
+
+  const files = req.files;
+
+  console.log("profile photo file in update User detail", JSON.stringify(files));
+
+  // const profilePhotoMimeType = 
 
   try{
     const updateFields: Partial<User> = {};
 
-    const allowedFields = ['name', 'username', 'bio', 'profilePhoto'] as const;
+    const allowedFields = ['name', 'bio', 'profilePhoto'] as const;
 
     for( const field of allowedFields) {
       if(req.body[field] !== undefined) {
