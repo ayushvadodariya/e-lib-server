@@ -11,14 +11,19 @@ const createBook = async (req: Request, res: Response, next: NextFunction) => {
     const { title, genre, description } = req.body;
 
     const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+    const _req = req as AuthRequest;
+    
     // 'application/pdf'
     const coverImageMimeType = files.coverImage[0].mimetype.split("/").at(-1);
     const fileName = files.coverImage[0].filename;
     const filePath = `${BOOKS_DIR}/${fileName}`; 
 
     try {
+        // Create unique filename for cover image
+        const uniqueCoverFileName = `cover_${_req.userId}_${Date.now()}`;
+        
         const uploadResult = await cloudinary.uploader.upload(filePath, {
-            filename_override: fileName,
+            filename_override: uniqueCoverFileName,
             folder: "book-covers",
             format: coverImageMimeType,
         });
@@ -30,16 +35,18 @@ const createBook = async (req: Request, res: Response, next: NextFunction) => {
             bookFileName
         );
 
+        // Create unique filename for book file
+        const uniqueBookFileName = `book_${_req.userId}_${Date.now()}`;
+
         const bookFileUploadResult = await cloudinary.uploader.upload(
             bookFilePath,
             {
                 resource_type: "raw",
-                filename_override: bookFileName,
+                filename_override: uniqueBookFileName,
                 folder: "book-pdfs",
                 format: "pdf",
             }
         );
-        const _req = req as AuthRequest;
 
         const newBook = await bookModel.create({
             title,
@@ -85,9 +92,12 @@ const updateBook = async (req: Request, res: Response, next: NextFunction) => {
           const fileName = files.coverImage[0].filename;
           const converMimeType = files.coverImage[0].mimetype.split("/").at(-1);
           const filePath = `${BOOKS_DIR}/${fileName}`; 
-          completeCoverImage = fileName;
+          
+          // Create unique filename for cover image
+          const uniqueCoverFileName = `cover_${_req.userId}_${Date.now()}`;
+          
           const uploadResult = await cloudinary.uploader.upload(filePath, {
-              filename_override: completeCoverImage,
+              filename_override: uniqueCoverFileName,
               folder: "book-covers",
               format: converMimeType,
           });
@@ -101,12 +111,12 @@ const updateBook = async (req: Request, res: Response, next: NextFunction) => {
       if (files.file) {
           const bookFilePath = `${BOOKS_DIR}/${files.file[0].filename}`;
 
-          const bookFileName = files.file[0].filename;
-          completeFileName = bookFileName;
+          // Create unique filename for book file
+          const uniqueBookFileName = `book_${_req.userId}_${Date.now()}`;
 
           const uploadResultPdf = await cloudinary.uploader.upload(bookFilePath, {
               resource_type: "raw",
-              filename_override: completeFileName,
+              filename_override: uniqueBookFileName,
               folder: "book-pdfs",
               format: "pdf",
           });

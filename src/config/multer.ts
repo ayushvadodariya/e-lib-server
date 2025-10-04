@@ -13,6 +13,8 @@ const storage = multer.diskStorage({
 
     if(file.fieldname === "coverImage" || file.fieldname === "file") {
       uploadPath = BOOKS_DIR;
+    } else if(file.fieldname === "profilePicture") {
+      uploadPath = UPLOAD_DIR;
     }
     
     mkdirSync(uploadPath, { recursive: true});
@@ -44,6 +46,13 @@ const multerUpload = multer({
         cb(null, true);
       } else {
         cb(new Error("Only PDF and EPUB files are allowed for books"));
+      }
+    } else if (file.fieldname === "profilePicture") {
+      const allowedMimes = ["image/jpeg", "image/jpg", "image/png"];
+      if(allowedMimes.includes(file.mimetype)){
+        cb(null, true);
+      } else{
+        cb(new Error("Only image files are allowed for profile pictures"));
       }
     } else {
       cb(null, true);
