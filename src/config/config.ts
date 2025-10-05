@@ -10,6 +10,7 @@ const _config = {
   cloudinaryApiKey: process.env.CLOUDINARY_API_KEY,
   cloudinarySecret: process.env.CLOUDINARY_API_SECRET,
   frontendDomain: process.env.FRONTEND_DOMAIN,
+  nlpCloudApiKey: process.env.NLP_CLOUD_API_KEY,
 };
 
 export const config = Object.freeze(_config);

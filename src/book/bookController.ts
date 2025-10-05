@@ -6,6 +6,7 @@ import createHttpError from "http-errors";
 import bookModel from "./bookModel";
 import { AuthRequest } from "../types/express";
 import { BOOKS_DIR } from "../config/multer";
+import { fixGrammarAndSpelling, improveDescription } from "./nlpCloudService";
 
 const createBook = async (req: Request, res: Response, next: NextFunction) => {
     const { title, genre, description } = req.body;
@@ -219,4 +220,44 @@ const deleteBook = async (req: Request, res: Response, next: NextFunction) => {
     }
 };
 
-export { createBook, updateBook, listBooks, getSingleBook, deleteBook };
+/**
+ * Fix grammar and spelling in description text
+ */
+const fixDescriptionGrammar = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { text } = req.body;
+        
+        if (!text) {
+            return next(createHttpError(400, "Text is required"));
+        }
+
+        const correctedText = await fixGrammarAndSpelling(text);
+
+        res.json({ correctedText });
+    } catch (error: any) {
+        console.error('Error in fixDescriptionGrammar:', error);
+        return next(createHttpError(500, error.message || "Error while fixing grammar"));
+    }
+};
+
+/**
+ * Improve description text
+ */
+const improveDescriptionText = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { text, prompt } = req.body;
+        
+        if (!text) {
+            return next(createHttpError(400, "Text is required"));
+        }
+
+        const improvedText = await improveDescription(text, prompt);
+
+        res.json({ improvedText });
+    } catch (error: any) {
+        console.error('Error in improveDescriptionText:', error);
+        return next(createHttpError(500, error.message || "Error while improving description"));
+    }
+};
+
+export { createBook, updateBook, listBooks, getSingleBook, deleteBook, fixDescriptionGrammar, improveDescriptionText };
