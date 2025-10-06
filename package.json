@@ -4,7 +4,9 @@
   "description": "This is a ebook api project",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon server.ts"
+    "dev": "nodemon server.ts",
+    "build": "npm install && tsc",
+    "start": "node dist/server.js"
   },
   "keywords": [
     "rest",
