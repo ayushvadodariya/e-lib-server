@@ -2,6 +2,16 @@
 
 A Node.js/Express backend API for a digital library platform with **AI-powered content enhancement** using NLP Cloud's LLaMA 3-70B model.
 
+## 🎯 Demo
+
+**API Base URL**: https://e-lib-server.onrender.com
+
+**Demo User Credentials:**
+- Email: `jk.rowling@gmail.com`
+- Password: `Password1!`
+
+*This demo account has pre-uploaded books and can be used to test all API endpoints.*
+
 ## 🚀 Features
 
 ### Core Features
