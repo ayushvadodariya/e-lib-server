@@ -6,7 +6,6 @@ import {
   listBooks,
   updateBook,
   fixDescriptionGrammar,
-  improveDescriptionText,
 } from "./bookController";
 import authenticate from "../middlewares/authenticate";
 import { upload } from "../config/multer";
@@ -41,6 +40,5 @@ bookRouter.delete("/:bookId", authenticate, deleteBook);
 
 // NLP Cloud text improvement endpoints
 bookRouter.post("/fix-grammar", authenticate, fixDescriptionGrammar);
-bookRouter.post("/improve-description", authenticate, improveDescriptionText);
 
 export default bookRouter;
